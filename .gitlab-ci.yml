@@ -1,0 +1,66 @@
+stages:
+  - test_basic
+  - test_advanced
+  - test_benchmark
+
+variables:
+  GIT_STRATEGY: fetch
+
+run_basic_tests:
+  stage: test_basic
+  tags:
+    - sdms_project_3
+  only:
+    refs:
+      - main
+  script:
+    - echo "Running basic tests"
+    - rm -rf ./target/sdms
+    - find -type f -exec sed -i '/#\s*\[.*test.*\]/s/^/\/\/ /g' {} \;
+    - find -type f -exec sed -i '/print\|assert\|dbg!/s/^/\/\/ /g' {} \;
+    - cp -r /tmp/eval_dir/* .
+    - (RUSTFLAGS='-C target-cpu=native' RUSTC_BOOTSTRAP=1 cargo test --no-fail-fast "basic" -- -Z unstable-options --format json || true) | tee test_basic.json
+    - echo "Delivering Results"
+    - PROJECT_NAME="SDMS Lab 3" python3 deliver.py basic test_basic.json
+    - rm -rf ./target/sdms
+  timeout: 10 minutes
+
+run_advanced_tests:
+  stage: test_advanced
+  tags:
+    - sdms_project_3
+  only:
+    refs:
+      - main
+  script:
+    - echo "Running advanced tests"
+    - rm -rf ./target/sdms
+    - find -type f -exec sed -i '/#\s*\[.*test.*\]/s/^/\/\/ /g' {} \;
+    - find -type f -exec sed -i '/print\|assert\|dbg!/s/^/\/\/ /g' {} \;
+    - cp -r /tmp/eval_dir/* .
+    - (RUSTFLAGS='-C target-cpu=native' RUSTC_BOOTSTRAP=1 cargo test --no-fail-fast "advanced" -- -Z unstable-options --format json || true) | tee test_advanced.json
+    - echo "Delivering Results"
+    - PROJECT_NAME="SDMS Lab 3" python3 deliver.py advanced test_advanced.json
+    - rm -rf ./target/sdms
+  timeout: 10 minutes
+
+run_benchmark:
+  stage: test_benchmark
+  tags:
+    - sdms_project_3_bench
+  only:
+    refs:
+      - main
+  script:
+    - echo "Running benchmark"
+    - rm -rf ./target/sdms
+    - rm -rf ./target/criterion
+    - find -type f -exec sed -i '/#\s*\[.*test.*\]/s/^/\/\/ /g' {} \;
+    - find -type f -exec sed -i '/print\|assert\|dbg!/s/^/\/\/ /g' {} \;
+    - cp -r /tmp/eval_dir/* .
+    - RUSTFLAGS='-C target-cpu=native' RUSTC_BOOTSTRAP=1 cargo bench --no-fail-fast --bench "query_bench"
+    - echo "Delivering Results"
+    - PROJECT_NAME="SDMS Lab 3" python3 deliver.py benchmark dummy
+    - rm -rf ./target/sdms
+    - rm -rf ./target/criterion
+  timeout: 10 minutes

@@ -1,0 +1,20 @@
+# This file will be replaced by the runner
+[package]
+name = "lab3"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+thiserror = "1.0.61"
+rand = "0.8.5"
+uuid = { version = "1.12.0", features = ["default", "v4", "v7"] }
+rand-utf8 = "0.0.1"
+criterion = "0.5.1"
+
+[[bench]]
+name = "query_bench"
+harness = false
+
+[[bench]]
+name = "basic_bench"
+harness = false
