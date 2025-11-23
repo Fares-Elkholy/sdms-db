@@ -1,4 +1,4 @@
-use std::{io::{Read, Write, Seek, SeekFrom}, str, string, vec, fs::File};
+use std::{io::{Read, Seek}, str};
 use super::{Columns, DataFile, DataFileHeader};
 use crate::{DatabaseError, RowID, TableChunk, TypeID, Value};
 
@@ -171,7 +171,6 @@ impl DataFile {
         file: &mut F,
         column_indexes: Columns,
     ) -> Result<Self, DatabaseError> {
-        const COLUMN_INF0_START: usize = 24;
 
         // // read no of rows
         // let row_bytes: [u8; 8] = bytes[8..16].try_into().expect("Slice for row bytes should be exactly 8 bytes");
@@ -348,28 +347,6 @@ impl DataFileHeader {
     } 
 }
 
-fn write_binary_datafile(bytes: Vec<u8>, file_name: &str) -> std::io::Result<()> {
-    // Create a new String to hold the hex representation.
-    let mut hex_output = String::new();
-    
-    for byte in bytes {
-        // Convert each byte to a two-digit hex string.
-        // "{:02x}" ensures a leading zero if needed.
-        hex_output.push_str(&format!("{:02x}", byte));
-        // Optionally add a space between each hex value for readability.
-        hex_output.push(' ');
-    }
-    
-    // Remove the trailing space, if any.
-    let hex_output = hex_output.trim();
-    
-    // Create or overwrite the file and write the hex string (as ASCII text) into it.
-    let mut file = File::create(file_name)?;
-    file.write_all(hex_output.as_bytes())?;
-    
-    Ok(())
-}
-
 #[cfg(test)]
 mod tests {
 
@@ -379,7 +356,7 @@ mod tests {
         rc::Rc,
     };
 
-    use crate::storage::{data::write_binary_datafile, DataFile, DataFileHeader};
+    use crate::storage::{DataFile, DataFileHeader};
     use crate::{DatabaseError, TypeID, Value};
     use rand::{
         distributions::{Standard, Uniform},
@@ -421,7 +398,6 @@ mod tests {
         }
 
         for f in files {
-            write_binary_datafile(f.clone(), "output.bin")?;
             let mut file = Cursor::new(f);
             let chunk = DataFile::parse(&mut file)?;
 

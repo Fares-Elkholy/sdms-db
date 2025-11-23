@@ -1,11 +1,8 @@
 use crate::iceberg::{Catalog, ColumnStats, FileStats, Manifest};
-use crate::storage::{self, data, DataFile, DataFileHeader, FileBasedStorage, FileHandle};
-use crate::{DatabaseError, Record, Schema, TableChunk, Value};
+use crate::storage::{DataFile, DataFileHeader, FileBasedStorage, FileHandle};
+use crate::{DatabaseError, Record, TableChunk, Value};
 use crate::TypeID;
-use std::any::type_name;
 use std::collections::HashSet;
-use std::fs::File;
-use std::io::Read;
 use std::vec;
 
 use crate::engine::SdmsIcebergEngine;
@@ -38,19 +35,22 @@ impl SdmsIcebergEngine {
         let no_cols = chunk.len();
         // iterate over each column
         for col_idx in 0..no_cols {
-            let mut min: Value = chunk[col_idx][0].clone();
-            let mut max: Value = chunk[col_idx][0].clone();
+            if chunk[col_idx].is_empty() {
+                continue;
+            }
+            let mut min: &Value = &chunk[col_idx][0];
+            let mut max: &Value = &chunk[col_idx][0];
             // iterate over each row in given column, update min/max if necessary
-            for row_idx in 0..chunk[col_idx].len() {
-                if chunk[col_idx][row_idx] < min {
-                    min = chunk[col_idx][row_idx].clone();
+            for row_idx in 1..chunk[col_idx].len() {
+                if &chunk[col_idx][row_idx] < min {
+                    min = &chunk[col_idx][row_idx];
                 }
-                else if chunk[col_idx][row_idx] > max {
-                    max = chunk[col_idx][row_idx].clone();
+                else if &chunk[col_idx][row_idx] > max {
+                    max = &chunk[col_idx][row_idx];
                 }
             }
             // add min, max of given column
-            min_max_vec.push((min, max));
+            min_max_vec.push((min.clone(), max.clone()));
         }
 
         // new ColumnStats from each pair of min max
@@ -72,14 +72,12 @@ impl SdmsIcebergEngine {
         for chunk in chunks {
             let stats = SdmsIcebergEngine::calculate_statistics(&chunk);
 
-            let no_bytes_per_row = SdmsIcebergEngine::no_rows_given_schema(&schema);
             let no_rows = chunk[0].len() as u64;
         
             let header = DataFileHeader::new(no_rows, no_cols, col_info.clone());
 
             // create file
             let file = DataFile::new(header, chunk);
-            file.to_bytes();
 
             // convert data to bytes
             let data = file.to_bytes();
@@ -92,136 +90,6 @@ impl SdmsIcebergEngine {
         }
 
         Ok(())
-    }
-
-    // /// given a TableChunk (without header), converts chunk to its bytes
- fn to_bytes_no_header(chunk: TableChunk) {
-    //     let mut result: Vec<u8> = vec![];
-        
-    //     for col in 0..chunk.len() { // col access
-    //         // represents the idx in result where start_idx bytes should be placed            
-    //         match &chunk[col][0]    {
-    //             Value::Int(_) => {
-    //                 for row in 0..chunk[col].len() { // row access
-    //                     // simply add int
-    //                     if let Value::Int(int) = chunk[col][row] {
-    //                         result.extend(int.to_le_bytes());
-    //                     }
-    //                     else {
-    //                         panic!("error")
-    //                     }
-    //                 }
-    //             }
-
-    //             Value::UInt(_) => {
-    //                 for row in 0..chunk[col].len() { // row access
-    //                     // simply add UInt
-    //                     if let Value::UInt(uint) = chunk[col][row] {
-    //                         result.extend(uint.to_le_bytes());
-    //                     }
-    //                     else {
-    //                         panic!("error")
-    //                     }
-    //                 }
-    //             }
-                
-    //             Value::Varchar(_) => {
-    //                 for row in 0..chunk[col].len() { // row access
-    //                     if let Value::Varchar(s) = &chunk[col][row] {
-    //                         let length_bytes: [u8; 8] = s.to_string().len().to_le_bytes();
-    //                         // first add length bytes for string
-    //                         result.extend(length_bytes);  
-                            
-    //                         // then add string decoded in utf8                 
-    //                         result.extend(s.to_string().as_bytes());
-    //                 }
-    //                 else {
-    //                     panic!("error!!!!")
-    //                 }
-    //             }
-    //             }
-    //             Value::RowID(_) => {
-    //                 for row in 0..chunk[col].len() { // row access
-    //                     // simply add RowID
-    //                     if let Value::RowID(rowid) = &chunk[col][row] {
-    //                         result.extend(rowid.0.to_le_bytes());
-    //                     }
-    //                     else {
-    //                         panic!("error")
-    //                     }
-    //                 }
-    //             } 
-    //         }    
-    //     }
-    //     result
-    // }
-
-
-    // fn parse_no_header(&mut self, bytes: &Vec<u8>, bytes_per_row: u64, schema: &Schema) -> TableChunk {
-
-    //     let rows = bytes.len() / bytes_per_row as usize;
-    //     let mut start_idx = 0;
-
-    //     let mut chunk: Vec<Vec<Value>> = vec![];
-
-    //     // parse each column to table chunk
-    //     for type_id in schema {
-    //         // used to save values in this column 
-    //         let mut column: Vec<Value> = vec![]; 
-    //         match type_id {
-    //             TypeID::Int => {
-    //                 for _idx in 0..rows as usize {
-    //                     let int_bytes: [u8; 4] = bytes[start_idx..start_idx+4].try_into().expect("Slice should be exactly 4 bytes");
-    //                     // add int to column
-    //                     column.push(Value::Int(i32::from_le_bytes(int_bytes)));
-    //                     start_idx = start_idx + 4;
-    //                 }  
-    //             }
-    //             TypeID::UInt => {
-    //                 for _idx in 0..rows as usize {
-    //                     let uint_bytes: [u8; 4] = bytes[start_idx..start_idx+4].try_into().expect("Slice should be exactly 4 bytes");
-    //                     // add uint to column
-    //                     column.push(Value::UInt(u32::from_le_bytes(uint_bytes)));
-    //                     start_idx = start_idx + 4;
-
-    //                 }
-    //             }
-    //             TypeID::RowID => {
-    //                 for _idx in 0..rows as usize {
-    //                     let rowid_bytes: [u8; 8] = bytes[start_idx..start_idx+8].try_into().expect("Slice should be exactly 8 bytes");
-    //                     // add rowid to column
-    //                     column.push(Value::RowID(crate::RowID(u64::from_le_bytes(rowid_bytes))));
-    //                     start_idx = start_idx + 8;
-    //                 }
-    //             }
-    //             _ => panic!("i don't update VARCHAR yet :((") // just ignore varchar for now
-    //         }
-    //         // push materialized column
-    //         chunk.push(column);
-    //     }
-
-    //     chunk
-    // }
- }
-
-
-    fn no_rows_given_schema(schema : &Vec<TypeID>) -> u64 {
-        let mut row_len = 0;
-        for typeid in schema {
-            match typeid {
-                TypeID::Int => {
-                    row_len += 4;
-                }
-                TypeID::UInt => {
-                    row_len += 4;
-                }
-                TypeID::RowID => {
-                    row_len += 8;
-                }
-                _ => panic!("i don't update VARCHAR yet :((")
-            }
-        }
-        row_len
     }
 
     /// Update the table using `updates`
@@ -245,9 +113,6 @@ impl SdmsIcebergEngine {
 
         let schema = self.catalog.get_table_metadata(self.table_id.unwrap()).clone().schema;
 
-        // calculate length (in bytes) of a row in the schema
-        let row_len = SdmsIcebergEngine::no_rows_given_schema(&schema);
-
         // Check for duplicate file handles
         let mut seen_file_handles = HashSet::new();
         for (fh, _) in &updates {
@@ -265,7 +130,7 @@ impl SdmsIcebergEngine {
             // load chunk from file
             let mut file = self.storage.read_file(&old_fh).unwrap();
             let mut datafile = DataFile::parse(&mut file)?;
-            let mut chunk_data = &mut datafile.data;
+            let chunk_data = &mut datafile.data;
 
             // load chunks to be changed from file
 

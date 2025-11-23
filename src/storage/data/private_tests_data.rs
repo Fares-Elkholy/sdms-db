@@ -1,5 +1,4 @@
 // This file will be replaced by the runner
-// Author: Jonathan Schild
 
 use super::{Columns, DataFile, DataFileHeader};
 
