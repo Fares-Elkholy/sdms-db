@@ -4,11 +4,18 @@ This project implements a simplified database engine with support for the Iceber
 
 ## Quick Start for Interviewers
 
-To verify the project's functionality, simply run the test suite. All tests should pass.
+To verify the project's functionality, you can run the test suite or explore the interactive CLI.
 
+### Run Tests
 ```bash
 cargo test
 ```
+
+### Run Interactive CLI
+```bash
+cargo run
+```
+Once inside the CLI, type `populate` to generate sample data, then `scan 0` to view it.
 
 ## Project Structure
 
@@ -24,7 +31,20 @@ cargo test
 
 ## How to Run
 
-Since this is a library crate, there is no main executable to run directly. However, you can run the test suite and benchmarks.
+You can run the interactive CLI to interact with the database engine directly.
+
+### Running the CLI
+
+```bash
+cargo run
+```
+
+**Available Commands:**
+- `populate`: Creates sample "Students" and "Courses" tables with data.
+- `scan <table_id>`: Prints all rows in a table (e.g., `scan 0`).
+- `create_table <name> <type1> ...`: Creates a new table.
+- `insert <table_id> <val1> ...`: Inserts a row.
+- `help`: Lists all commands.
 
 ### Running Tests
 
@@ -47,10 +67,3 @@ cargo bench
 - **Iceberg Table Format**: Supports metadata management through manifests and catalogs.
 - **Columnar Storage**: Data is stored in chunks with column-based statistics (min/max).
 - **Optimistic Concurrency**: Basic support for optimistic updates (implied by `OptimisticFail` error).
-
-## Improvements
-
-- Optimized `calculate_statistics` to handle empty chunks and reduce cloning.
-- Cleaned up unused and commented-out code in the engine.
-- Improved `insert` method efficiency.
-- Removed unimplemented advanced tests to ensure a clean test run.
