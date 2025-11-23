@@ -1,4 +1,4 @@
-# Scalable Datamanagement Systems - Lab 3
+# Scalable Datamanagement Systems - DB
 
 This project implements a simplified database engine with support for the Iceberg table format. It includes a catalog, manifest files, and file-based storage.
 
@@ -6,16 +6,16 @@ This project implements a simplified database engine with support for the Iceber
 
 To verify the project's functionality, you can run the test suite or explore the interactive CLI.
 
-### Run Tests
-```bash
-cargo test
-```
-
 ### Run Interactive CLI
 ```bash
 cargo run
 ```
 Once inside the CLI, type `populate` to generate sample data, then `scan 0` to view it.
+
+### Run Tests
+```bash
+cargo test
+```
 
 ## Project Structure
 
@@ -54,13 +54,24 @@ To run the unit tests:
 cargo test
 ```
 
-### Running Benchmarks
+## Data Storage Format
 
-To run the performance benchmarks:
+The database uses a custom binary format for storing table chunks. Files are stored with a `.bin` extension and follow a columnar layout.
 
-```bash
-cargo bench
-```
+### File Header
+The header contains metadata about the file's content:
+1.  **Magic Bytes** (8 bytes): `SDMS\x19\x03JS` (0x53, 0x44, 0x4d, 0x53, 0x19, 0x03, 0x4a, 0x53)
+2.  **Row Count** (8 bytes, u64): Number of rows in the chunk.
+3.  **Column Count** (8 bytes, u64): Number of columns.
+4.  **Column Info**: For each column:
+    - **Type ID** (8 bytes, u64): 0=Int, 1=UInt, 2=RowID, 3=Varchar.
+    - **Start Index** (8 bytes, u64): Byte offset where the column data begins.
+
+### Data Layout
+Data is stored column by column (Columnar Storage).
+- **Int/UInt**: Stored as 4-byte little-endian integers.
+- **RowID**: Stored as 8-byte little-endian integers.
+- **Varchar**: Stored as an 8-byte length followed by the UTF-8 string bytes.
 
 ## Features
 
