@@ -1,6 +1,6 @@
-# Scalable Datamanagement Systems - DB
+# SDMS-DB
 
-This project implements a simplified database engine with support for the Iceberg table format. It includes a catalog, manifest files, and file-based storage.
+This project implements a simplified database engine with support for the [Iceberg table format](https://iceberg.apache.org/spec/#overview). It includes a catalog, manifest files, and file-based storage.
 
 ## Quick Start for Interviewers
 
@@ -10,7 +10,7 @@ To verify the project's functionality, you can run the test suite or explore the
 ```bash
 cargo run
 ```
-Once inside the CLI, type `populate` to generate sample data, then `scan 0` to view it.
+Once inside the CLI, type `populate` to generate sample data, then `scan n` for `n in [0, 1]` to view it.
 
 ### Run Tests
 ```bash
@@ -75,6 +75,6 @@ Data is stored column by column (Columnar Storage).
 
 ## Features
 
-- **Iceberg Table Format**: Supports metadata management through manifests and catalogs.
-- **Columnar Storage**: Data is stored in chunks with column-based statistics (min/max).
-- **Optimistic Concurrency**: Basic support for optimistic updates (implied by `OptimisticFail` error).
+- Supports metadata through manifests and catalogs (similar to Apache Iceberg).
+- Data is stored in chunks with column-based statistics (min/max) for fast pruning.
+- Basic support for optimistic concurrency updates.
