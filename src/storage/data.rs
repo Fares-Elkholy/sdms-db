@@ -1,4 +1,4 @@
-use std::{io::{Read, Seek}, str};
+use std::io::{Read, Seek};
 use super::{Columns, DataFile, DataFileHeader};
 use crate::{DatabaseError, RowID, TableChunk, TypeID, Value};
 
@@ -275,7 +275,9 @@ impl DataFile {
 
 impl DataFileHeader {
     const MAGIC: [u8; 8] = [0x53, 0x44, 0x4d, 0x53, 0x19, 0x03, 0x4a, 0x53];
+    #[allow(dead_code)]
     const HDR_LEN: usize = Self::MAGIC.len() + 16; // 8 byte for rows, 8 bytes for columns
+    #[allow(dead_code)]
     const COLUMN_INFO_LEN: usize = 16;
 
     pub fn new(rows: u64, columns: u64, column_info: Vec<(TypeID, usize)>) -> Self {
@@ -324,7 +326,7 @@ impl DataFileHeader {
         // add column infos
         let mut col_info: Vec<(TypeID, usize)> = vec![];
         // go to first int
-        let mut start_string: usize = 24 + (16*cols as usize);
+        let _start_string: usize = 24 + (16*cols as usize);
         for i in 0..cols {
             let pos = 24 + (i * 16) as usize;
 

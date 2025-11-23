@@ -1,4 +1,3 @@
-use std::collections::VecDeque;
 use std::ops::RangeInclusive;
 
 use super::{FileStats, Manifest};

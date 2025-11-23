@@ -1,7 +1,7 @@
-use lab3::engine::SdmsIcebergEngine;
-use lab3::iceberg::{Catalog, TableMetadata};
-use lab3::storage::FileBasedStorage;
-use lab3::{Record, RowID, TypeID, Value};
+use sdms_db::engine::SdmsIcebergEngine;
+use sdms_db::iceberg::{Catalog, TableMetadata};
+use sdms_db::storage::FileBasedStorage;
+use sdms_db::{RowID, TypeID, Value};
 use std::io::{self, Write};
 use std::path::PathBuf;
 use std::rc::Rc;
@@ -186,7 +186,7 @@ fn handle_scan(engine: &mut SdmsIcebergEngine, args: &[&str]) {
     for file_handle in files {
         match engine.storage.read_file(&file_handle) {
             Ok(mut reader) => {
-                match lab3::storage::DataFile::parse(&mut reader) {
+                match sdms_db::storage::DataFile::parse(&mut reader) {
                     Ok(data_file) => {
                         let chunk = data_file.data;
                         if chunk.is_empty() { continue; }

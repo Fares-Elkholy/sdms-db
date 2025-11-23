@@ -1,4 +1,3 @@
-// This file will be replaced by the runner
 
 use super::{Catalog, TableMetadata};
 

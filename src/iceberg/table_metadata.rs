@@ -2,9 +2,7 @@ use super::{version::Version, Manifest, TableMetadata};
 use crate::storage::FileHandle;
 use crate::{Schema, Value};
 use std::collections::HashSet;
-use std::fs::File;
 use std::ops::RangeInclusive;
-use std::result;
 
 impl TableMetadata {
     pub fn new(name: String, schema: Schema) -> Self {

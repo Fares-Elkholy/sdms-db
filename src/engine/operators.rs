@@ -1,11 +1,9 @@
-use crate::storage::{data, Columns, DataFile};
+use crate::storage::{Columns, DataFile};
 use crate::storage::{FileBasedStorage, FileHandle};
 use crate::Operator;
 use crate::{TableChunk, Value};
-use std::collections::{BTreeMap, HashMap, VecDeque};
-use std::hash::Hash;
-use std::iter::Filter;
-use std::{default, result, vec};
+use std::collections::{HashMap, VecDeque};
+use std::vec;
 
 pub struct ColumnTableScan {
     opened: bool,

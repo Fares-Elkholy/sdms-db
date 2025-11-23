@@ -1,4 +1,3 @@
-// This file will be replaced by the runner
 
 #[derive(Debug, Default, PartialEq, PartialOrd, Ord, Eq, Hash, Clone, Copy)]
 pub struct Version {

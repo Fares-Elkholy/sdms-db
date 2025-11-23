@@ -1,8 +1,5 @@
-use crate::engine::operators::*;
 use crate::engine::*;
 use crate::DatabaseError;
-use crate::Operator;
-use std::collections::HashMap;
 
 type TableID = usize;
 type ColumnID = usize;
@@ -30,8 +27,8 @@ impl Optimizer {
      * No tests for this one, check benches/basic_bench for a benchmark that might help you for the real benchmark in the pipeline.
      */
     pub fn re_cluster(
-        engine: &mut SdmsIcebergEngine,
-        workload: Vec<QueryPlan>,
+        _engine: &mut SdmsIcebergEngine,
+        _workload: Vec<QueryPlan>,
     ) -> Result<(), DatabaseError> {
         todo!()
     }

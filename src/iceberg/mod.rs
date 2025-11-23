@@ -1,4 +1,3 @@
-// This file will be replaced by the runner
 
 use crate::storage::FileHandle;
 use crate::{Schema, Value};

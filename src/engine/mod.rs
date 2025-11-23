@@ -1,4 +1,3 @@
-// This file will be replaced by the runner
 
 pub mod db_engine;
 pub mod operators;

@@ -1,6 +1,5 @@
-// This file will be replaced by the runner
 
-//! # Scalable Datamanagement Systems - Lab 3
+//! # Scalable Datamanagement Systems - DB Engine
 
 use std::fmt::{Debug, Display};
 use std::io;

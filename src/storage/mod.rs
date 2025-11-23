@@ -1,4 +1,3 @@
-// This file will be replaced by the runner
 
 use crate::{TableChunk, TypeID};
 use std::path::PathBuf;
