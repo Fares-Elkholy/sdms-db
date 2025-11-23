@@ -7,7 +7,7 @@ impl DataFile {
         DataFile { header, data }
     }
 
-    /// Serializes [`DataFile`] as specified in lab slides.
+    /// Serializes [`DataFile`] into the custom binary format.
     pub fn to_bytes(&self) -> Vec<u8> {
         let mut result: Vec<u8> = vec![];
         // add header
@@ -97,7 +97,7 @@ impl DataFile {
         result
     }
 
-    /// Deserialize all columns into [`DataFile`] as specified in lab slides.
+    /// Deserialize all columns into [`DataFile`] from the custom binary format.
     pub fn parse<F: Seek + Read>(file: &mut F) -> Result<Self, DatabaseError> {
         // read file
         let mut bytes = Vec::new();
@@ -166,7 +166,7 @@ impl DataFile {
         Ok(DataFile::new(header, chunk))
     }
 
-    /// Deserialize selected columns into [`DataFile`] as specified in lab slides.
+    /// Deserialize selected columns into [`DataFile`] from the custom binary format.
     pub fn parse_columns<F: Seek + Read>(
         file: &mut F,
         column_indexes: Columns,

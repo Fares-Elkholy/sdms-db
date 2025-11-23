@@ -24,7 +24,6 @@ pub struct Optimizer {}
 impl Optimizer {
     /**
      * Re-cluster data files to fit the workload.
-     * No tests for this one, check benches/basic_bench for a benchmark that might help you for the real benchmark in the pipeline.
      */
     pub fn re_cluster(
         _engine: &mut SdmsIcebergEngine,

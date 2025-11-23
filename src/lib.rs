@@ -1,5 +1,5 @@
 
-//! # Scalable Datamanagement Systems - DB Engine
+//! # SDMS-DB Engine
 
 use std::fmt::{Debug, Display};
 use std::io;
