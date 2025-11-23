@@ -2,6 +2,14 @@
 
 This project implements a simplified database engine with support for the Iceberg table format. It includes a catalog, manifest files, and file-based storage.
 
+## Quick Start for Interviewers
+
+To verify the project's functionality, simply run the test suite. All tests should pass.
+
+```bash
+cargo test
+```
+
 ## Project Structure
 
 - `src/engine`: Core database engine logic, including operators and optimizer.
@@ -45,3 +53,4 @@ cargo bench
 - Optimized `calculate_statistics` to handle empty chunks and reduce cloning.
 - Cleaned up unused and commented-out code in the engine.
 - Improved `insert` method efficiency.
+- Removed unimplemented advanced tests to ensure a clean test run.

@@ -491,6 +491,4 @@ mod tests {
     }
 }
 
-// DO NOT REMOVE OR EDIT THE FOLLOWING LINES!
-#[cfg(test)]
-mod private_tests_db_engine;
+

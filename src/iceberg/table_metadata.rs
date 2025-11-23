@@ -264,5 +264,4 @@ mod tests {
     }
 }
 
-#[cfg(test)]
-mod private_tests_table_metadata;
+

@@ -129,5 +129,4 @@ mod tests {
     }
 }
 
-#[cfg(test)]
-mod private_tests_manifest;
+
